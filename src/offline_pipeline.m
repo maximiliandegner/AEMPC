@@ -8,8 +8,11 @@ t = tic;
 
 % adjust model parameters and uncertainty if desired --> change the values in the file below
 addpath("Offline\");
+theta_true = syst.theta_true;
+theta_nom = syst.theta_nom;
 run parameter_def.m
-option = 2
+a_1 = syst.scl(1); a_2 = syst.scl(2);      % scaling factors for parameter in model
+option = 1
 
 if option == 1
 %% Option 1: fix w_bar, rho, L_w and solve SDP
@@ -26,8 +29,7 @@ load('opt_steady.mat', "r_set"); equilib = full(r_set);
 
 
 % preliminary definitions
-import casadi.*    
-a_1 = 10^5; a_2 = 4e2;      % scaling factors for parameter in model
+import casadi.*  
 nonconst = 0;
 
 % combined state and input constraints + evaluation at desired
@@ -56,7 +58,6 @@ if solved
     disp("Solution found.")
     Y=value(Y);  Y_0=value(Y_0);
     X=value(X);  X_0=value(X_0);
-    fprintf("Matrix P is:\n")
     P = value(inv(X));
     K = value(Y*P);
 else
@@ -80,6 +81,7 @@ w_max = 0.002;
 [P, K, w_bar, rho, c_j, Lw] = LMI_improved(h, n_steps, RHO, LW_range, w_max);
 
 disp("End of Option 2.")
+
 
 else
     error("Select an option (1 or 2).")

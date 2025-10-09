@@ -1,12 +1,11 @@
 % clear all
-function AE_MPC_journal(type, N, Tsim, beta, mu, TV, JIT_boolean)
+function AE_MPC(type, N, Tsim, beta, mu, TV, JIT_boolean)
  clc
 % type      String, one of the following options: "AEMPC", "EMPC_perfect", or "EMPC_estimate"
 % N         Prediction horizon
 % Tsim      Simulation length
 % beta      Weight of artifical reference cost term (equilibrium cost)
 % mu        LMS parameter update gain
-% TV        switch time-varying parameters on (true) or off (false)
 % JIT_boolean   Switch just-in-time compilation (CasADi) of Solver on
                 % (true) or off (false); default: off
 
@@ -19,6 +18,7 @@ switch nargin
         Tsim = 200;
         beta = 100;
         mu = 15;
+        TV = false;
         JIT_boolean = false;
     case 6
         JIT_boolean = false;
@@ -46,11 +46,15 @@ end
 
 %% import and system parameters
 import casadi.* 
-n = 3; % state dimension
-m = 1; % input dimension 
+n = syst.n; % state dimension
+m = syst.m; % input dimension 
+q = syst.q; % parameter dimension
+theta_true = syst.theta_true;
+theta_nom = syst.theta_nom;
 
-% load parameter defintion --> gives theta_true, theta_nom, Theta_0, d
+% load parameter defintion --> gives Theta_0, W
 run parameter_def.m;
+
 if TV
     % alters the true parameter value for the time-varying parameter case, must match the value in figures_journal.m / Figure(6)!
     theta_true = theta_true.*[0.995;1.01];  
@@ -76,11 +80,7 @@ con_obj.uncbound_nlpinit = true;
 % simulation time start
 t_0 = 0.0;
 
-%constraints
-x_min=0.03;
-x_max=0.25;
-u_min=0.049;
-u_max=0.449;
+%constraints (x_min, etc. stem from parameter_def.m)
 con_obj.ub_x = [x_max;x_max;x_max];
 con_obj.lb_x = [x_min;x_min;x_min];
 con_obj.ub_u = u_max;
@@ -118,21 +118,21 @@ s = opti.variable(N+1,1);
 w = opti.variable(N,1);
 p = opti.variable(n,1);
 
-x_k             = opti.parameter(3, 1);
-theta_LMS       = opti.parameter(2, 1);
-lambda_old      = opti.parameter(1, 1);
+x_k             = opti.parameter(n, 1);
+theta_LMS       = opti.parameter(q, 1);
+lambda_old      = opti.parameter(q, 1);
 
 %% Set initial parameter estimate and define objective function
 switch type
     case "AEMPC"
         theta_est = [0.09803; 1.02];
-        warning("Running AE-MPC mode.")
+        disp("INFO:   Running AE-MPC mode.")
     case "EMPC_estimate"
         theta_est = [0.09803; 1.02];
-        warning(['Starting E-MPC mode with estimate = ' num2str(theta_est(1)) ', ' num2str(theta_est(2)) '.'])
+        disp(['INFO:   Starting E-MPC mode with estimate = ' num2str(theta_est(1)) ', ' num2str(theta_est(2)) '.'])
     case "EMPC_perfect"
         theta_est = theta_true;
-        warning(['Running E-MPC mode with true = ' num2str(theta_est(1)) ', ' num2str(theta_est(2)) '.'])
+        disp(['INFO:   Running E-MPC mode with true = ' num2str(theta_est(1)) ', ' num2str(theta_est(2)) '.'])
 end
 con_obj.theta_nom = theta_nom;
 con_obj.theta_true = theta_true;
@@ -185,10 +185,9 @@ opti.subject_to( A_x*z(end-2:end) - b_x + c(1:size(A_x,1))*s(ii) <= zeros(size(A
 
 % anti performance-degradation constraint
 obj.solver_lambda = [];
-tolerance = 1e-3;
-u_s = full(r_set(n+1:n+m)); x_s = full(r_set(1:n));
+u_s = full(r_set(4)); x_s = full(r_set(1:3));
 opti.set_value(lambda_old,  opt_steady_online(n,m, theta_est,u_s , x_s, true, obj)  );
-opti.subject_to( -xr(2) <= lambda_old+tolerance ); concheck = [concheck; -1]; % xr(2) is steady-state cost and tolerance needed for numerical stability
+opti.subject_to( -xr(2) <= lambda_old+1e-3 ); concheck = [concheck; -1];
 
 % initial constraint
 opti.subject_to( x(1:n) - x_k == zeros(n,1) );                      concheck = [concheck; zeros(n,1)];
@@ -244,7 +243,7 @@ for t = 2:Tsim
 
     %%% SWITCH LMS ON AFTER 200 STEPS
     if LMS && t>= 200
-        theta_est = param_estim(x_arr(1:n, t-1), u_arr(1:m, t-1), x_arr(:,t), h, theta_est, Theta_0, LMS_params);
+        theta_est = param_estim(x_arr(1:n, t-1), u_arr(1:m, t-1), x_arr(:,t), h, theta_est, Theta_0, LMS_params)
     elseif ~LMS && type == "EMPC_estimate" 
         theta_est =  theta_est; 
     elseif ~LMS && type == "EMPC_perfect" 
@@ -317,7 +316,7 @@ for t = 2:Tsim
 
     %%%% TIME VARYING PARAMETER UPDATE
     if TV 
-       theta_true = theta_true+[2.5e-7;-4.0e-6];
+       theta_true = theta_true+[0.00000025;-0.000004];
        LMS_params.const.theta_true = theta_true;
     end
 end
@@ -326,12 +325,13 @@ end
 %% SAVE results
 switch type
     case "AEMPC"
-        save(['Results/Simulations/AE_scaled--N_' , num2str(N),  '-Tsim_' , num2str(Tsim),  '-mu_', num2str(mu),  '-h_', num2str(h), '-LMS_', num2str(LMS), '-TV_', num2str(TV),'.mat'], "w_arr", "u_arr", "v_arr", "x_arr", "z_arr", "xr_arr", "zr_arr", "sol", "theta_arr", "h", "Tsim", "mu", "w_bar", "Lw", "P", "P_f", "x_min", "x_max", "Tsolve_arr");
+        save(['Results/Simulations/AE_scaled--N_' , num2str(N),  '-Tsim_' , num2str(Tsim),  '-mu_', num2str(mu),  '-h_', num2str(h), '-LMS_', num2str(LMS), '-TV_', num2str(TV), '.mat'], "w_arr", "u_arr", "v_arr", "x_arr", "z_arr", "xr_arr", "zr_arr", "sol", "theta_arr", "h", "Tsim", "mu", "w_bar", "Lw", "P", "P_f", "x_min", "x_max", "Tsolve_arr");
     case "EMPC_estimate"
         save(['Results/Simulations/E_wrong--N_' , num2str(N),  '-Tsim_' , num2str(Tsim),  '-mu_', num2str(mu),  '-h_', num2str(h), '-LMS_', num2str(LMS), '-TV_', num2str(TV), '.mat'], "w_arr", "u_arr", "v_arr", "x_arr", "z_arr", "xr_arr", "zr_arr", "sol", "theta_arr", "h", "Tsim", "mu", "w_bar", "Lw", "P", "P_f", "x_min", "x_max", "Tsolve_arr");
     case "EMPC_perfect"
         save(['Results/Simulations/E_true--N_' , num2str(N),  '-Tsim_' , num2str(Tsim),  '-mu_', num2str(mu),  '-h_', num2str(h), '-LMS_', num2str(LMS), '-TV_', num2str(TV), '.mat'], "w_arr", "u_arr", "v_arr", "x_arr", "z_arr", "xr_arr", "zr_arr", "sol", "theta_arr", "h", "Tsim", "mu", "w_bar", "Lw", "P", "P_f", "x_min", "x_max", "Tsolve_arr");
 end
+disp(['INFO: Saved results of the simulation ', type])
 
 end 
 

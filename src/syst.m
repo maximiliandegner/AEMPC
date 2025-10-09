@@ -1,13 +1,19 @@
 % syst.m
 
 classdef syst
+
+    properties (Constant)
+        n = 3; % state dimension
+        m = 1; % input dimension
+        q = 2; % parameter dimension
+        alpha = 2;
+        delta = 0.55;
+        theta_true = [0.1;1];
+        theta_nom  = syst.theta_true .* [0.995; 1.005];% [1.005; 0.995];
+        scl= [10^5, 4*10^2];
+    end %properties (constant)
+
     methods (Static)
-        function a = static_param()
-            d = 2;
-            a = zeros(d,1);
-            a(1) = 1;% 10^5; --> scaling of 10^5 included in model equations
-            a(2) = 1; % 400; --> scaling of 4*10^2 included in model equations
-        end
 
         function [A,B]=getA_d(x,u,h, theta)
             import casadi.*
@@ -22,66 +28,63 @@ classdef syst
                 otherwise
                    error("nargin not right.")
             end
-            n=3;
-
             % assemble A and B matrices
-            A=eye(n)+h*A_1;
+            A=eye(syst.n)+h*A_1;
             B=h*B_1;
         end %function
             
-        function [A,B]=getA_d_RK4(x,u,h, theta)
-            import casadi.*
-            %Jacobian of discrete-time system (hard coded using cont.-time Jacobian +
-            %RK4)
-            n=3; 
-            switch nargin
-                case 3
-                    k1=syst.fun(x,u);
-                    k2=syst.fun(x+h/2*k1,u);
-                    k3=syst.fun(x+h/2*k2,u);
-                    k4=syst.fun(x+k3,u);
-                    %RuKu4 discretization
-                    %1. derivative k_1: [A_c,B_c]
-                    [A_1,B_1]=syst.getA_c(x,u);
-                    %2. derivative k_2:
-                    [A_2,B_2]=syst.getA_c(x+h/2*k1,u);
-                    A_k2=A_2*(eye(n)+h/2*A_1);
-                    B_k2=B_2+h/2*A_2*B_1;
-                    %3. derivative k_3:
-                    [A_3,B_3]=syst.getA_c(x+h/2*k2,u);
-                    A_k3=A_3*(eye(n)+h/2*A_k2);
-                    B_k3=B_3+h/2*A_3*B_k2;
-                    %4. derivative k_4:
-                    [A_4,B_4]=syst.getA_c(x+h*k3,u);
-                    A_k4=A_4*(eye(n)+h*A_k3);
-                    B_k4=B_4+h*A_4*B_k3;
-                case 4
-                    k1=syst.fun(x,u,theta);
-                    k2=syst.fun(x+h/2*k1,u,theta);
-                    k3=syst.fun(x+h/2*k2,u,theta);
-                    k4=syst.fun(x+k3,u,theta);
-                    %RuKu4 discretization
-                    %1. derivative k_1: [A_c,B_c]
-                    [A_1,B_1]=syst.getA_c(x,u,theta);
-                    %2. derivative k_2:
-                    [A_2,B_2]=syst.getA_c(x+h/2*k1,u,theta);
-                    A_k2=A_2*(eye(n)+h/2*A_1);
-                    B_k2=B_2+h/2*A_2*B_1;
-                    %3. derivative k_3:
-                    [A_3,B_3]=syst.getA_c(x+h/2*k2,u,theta);
-                    A_k3=A_3*(eye(n)+h/2*A_k2);
-                    B_k3=B_3+h/2*A_3*B_k2;
-                    %4. derivative k_4:
-                    [A_4,B_4]=syst.getA_c(x+h*k3,u,theta);
-                    A_k4=A_4*(eye(n)+h*A_k3);
-                    B_k4=B_4+h*A_4*B_k3;
-                otherwise
-                    error("nargin mismatch.")
-            end
-            
-            A=eye(n)+h/6*(A_1+2*A_k2+2*A_k3+A_k4);
-            B=h/6*(B_1+2*B_k2+2*B_k3+B_k4);
-        end
+        % function [A,B]=getA_d_RK4(x,u,h, theta)
+        %     import casadi.*
+        %     %Jacobian of discrete-time system (hard coded using cont.-time Jacobian +
+        %     %RK4) 
+        %     switch nargin
+        %         case 3
+        %             k1=syst.fun(x,u);
+        %             k2=syst.fun(x+h/2*k1,u);
+        %             k3=syst.fun(x+h/2*k2,u);
+        %             k4=syst.fun(x+k3,u);
+        %             %RuKu4 discretization
+        %             %1. derivative k_1: [A_c,B_c]
+        %             [A_1,B_1]=syst.getA_c(x,u);
+        %             %2. derivative k_2:
+        %             [A_2,B_2]=syst.getA_c(x+h/2*k1,u);
+        %             A_k2=A_2*(eye(syst.n)+h/2*A_1);
+        %             B_k2=B_2+h/2*A_2*B_1;
+        %             %3. derivative k_3:
+        %             [A_3,B_3]=syst.getA_c(x+h/2*k2,u);
+        %             A_k3=A_3*(eye(syst.n)+h/2*A_k2);
+        %             B_k3=B_3+h/2*A_3*B_k2;
+        %             %4. derivative k_4:
+        %             [A_4,B_4]=syst.getA_c(x+h*k3,u);
+        %             A_k4=A_4*(eye(syst.n)+h*A_k3);
+        %             B_k4=B_4+h*A_4*B_k3;
+        %         case 4
+        %             k1=syst.fun(x,u,theta);
+        %             k2=syst.fun(x+h/2*k1,u,theta);
+        %             k3=syst.fun(x+h/2*k2,u,theta);
+        %             k4=syst.fun(x+k3,u,theta);
+        %             %RuKu4 discretization
+        %             %1. derivative k_1: [A_c,B_c]
+        %             [A_1,B_1]=syst.getA_c(x,u,theta);
+        %             %2. derivative k_2:
+        %             [A_2,B_2]=syst.getA_c(x+h/2*k1,u,theta);
+        %             A_k2=A_2*(eye(syst.n)+h/2*A_1);
+        %             B_k2=B_2+h/2*A_2*B_1;
+        %             %3. derivative k_3:
+        %             [A_3,B_3]=syst.getA_c(x+h/2*k2,u,theta);
+        %             A_k3=A_3*(eye(syst.n)+h/2*A_k2);
+        %             B_k3=B_3+h/2*A_3*B_k2;
+        %             %4. derivative k_4:
+        %             [A_4,B_4]=syst.getA_c(x+h*k3,u,theta);
+        %             A_k4=A_4*(eye(syst.n)+h*A_k3);
+        %             B_k4=B_4+h*A_4*B_k3;
+        %         otherwise
+        %             error("nargin mismatch.")
+        %     end
+        % 
+        %     A=eye(syst.n)+h/6*(A_1+2*A_k2+2*A_k3+A_k4);
+        %     B=h/6*(B_1+2*B_k2+2*B_k3+B_k4);
+        % end
             
         function [A,B]=getA_c(x,u, theta)
             import casadi.*
@@ -89,21 +92,20 @@ classdef syst
                 case 1
                     error("Not enough arguments.")
                 case 2
-                    a = syst.static_param();
-                    a_1 = a(1); a_2 = a(2);
+                    a_1 = syst.theta_true(1); a_2 = syst.theta_true(2);
                 case 3
                     a_2=theta(2); a_1=theta(1);
             end
-            alpha=2;  delta=0.55;
+            %shorthands
+            alpha = syst.alpha;
+            delta = syst.delta;
             %including scaling
-            a_1 = a_1*10^5;
-            a_2 = a_2*4*10^2;
+            a_1 = syst.scl(1)*a_1;
+            a_2 = syst.scl(2)*a_2;
 
             %Jacobian of cont.-time system
-            n=3;
-            m=1;
             %compute lineariztion
-            A=zeros(n);B=zeros(n,m);
+            A=zeros(syst.n);B=zeros(syst.n,syst.m);
             if ~isa(x,'double')
                 A = MX(A); B = MX(B);
             end
@@ -128,16 +130,14 @@ classdef syst
             switch nargin
                 case 1
                     error("Not enough arguments.")
-                case 2
-                    a = syst.static_param();
-                    a_1 = a(1); a_2 = a(2);
+                case 2 % true system's evolution
+                    a_1 = syst.theta_true(1); a_2 = syst.theta_true(2);
                 case 3
                     a_2=theta(2); a_1=theta(1);
             end
-            alpha=2;  delta=0.55;
             % including scaling
-            a_1 = 10^5*a_1;
-            a_2 = 4*10^2*a_2;
+            a_1 = syst.scl(1)*a_1;
+            a_2 = syst.scl(2)*a_2;
             %continuous-time dynamics
             f=zeros(size(x,1),1);
             if isa(x,"MX")
@@ -145,15 +145,13 @@ classdef syst
             elseif isa(x,"SX")
                 f=SX(f);
             end
-            f(1)=-a_1*exp(-1/x(3))*x(1)^alpha-a_2*exp(-delta/x(3))*x(1)-x(1)+1;
-            f(2)=a_1*exp(-1/x(3))*x(1)^alpha-x(2);
+            f(1)=-a_1*exp(-1/x(3))*x(1)^syst.alpha-a_2*exp(-syst.delta/x(3))*x(1)-x(1)+1;
+            f(2)=a_1*exp(-1/x(3))*x(1)^syst.alpha-x(2);
             f(3)=-x(3)+u;
         end 
             
         function x_new=dynamic(x,u,h, theta)
             import casadi.*
-            %nonlinear discrete-time model
-            %here, obtain through RK4 of cont.-time
             switch nargin
                 case 3
                     k1=syst.fun(x,u);
@@ -165,27 +163,27 @@ classdef syst
             x_new=x+h*k1;
         end
             
-        function x_new=dynamic_RK4(x,u,h, theta)
-            import casadi.*
-            %nonlinear discrete-time model
-            %here, obtain through RK4 of cont.-time
-            switch nargin
-                case 3
-                    k1=syst.fun(x,u);
-                    k2=syst.fun(x+h/2*k1,u);
-                    k3=syst.fun(x+h/2*k2,u);
-                    k4=syst.fun(x+h*k3,u);
-                case 4
-                    k1=syst.fun(x,u,theta);
-                    k2=syst.fun(x+h/2*k1,u,theta);
-                    k3=syst.fun(x+h/2*k2,u,theta);
-                    k4=syst.fun(x+h*k3,u);
-                otherwise
-                    error("nargin mismatch.")
-            end
-
-            x_new=x+h/6*(k1+2*k2+2*k3+k4);
-        end
+        % function x_new=dynamic_RK4(x,u,h, theta)
+        %     import casadi.*
+        %     %nonlinear discrete-time model
+        %     %here, obtain through RK4 of cont.-time
+        %     switch nargin
+        %         case 3
+        %             k1=syst.fun(x,u);
+        %             k2=syst.fun(x+h/2*k1,u);
+        %             k3=syst.fun(x+h/2*k2,u);
+        %             k4=syst.fun(x+h*k3,u);
+        %         case 4
+        %             k1=syst.fun(x,u,theta);
+        %             k2=syst.fun(x+h/2*k1,u,theta);
+        %             k3=syst.fun(x+h/2*k2,u,theta);
+        %             k4=syst.fun(x+h*k3,u);
+        %         otherwise
+        %             error("nargin mismatch.")
+        %     end
+        % 
+        %     x_new=x+h/6*(k1+2*k2+2*k3+k4);
+        % end
 
         function [A,B,X,Y,K] = getXY(x_r,u_r,h, theta)
             import casadi.*
@@ -214,29 +212,29 @@ classdef syst
             % the terminal set defining matrix P, the parametric uncertainty set 
             % Theta and the additive disturbance set W
             import casadi.*
-            P_sqrt = (P^(0.5)); P_isqrt = (inv(P_sqrt));
-            d = size(Theta.A,2); n = size(W.A,2);
+            P_sqrt = sqrtm(P); P_isqrt = (inv(P_sqrt));
             num = 10;
             
-            x_space1 = linspace(-X_poly.b(n+1), X_poly.b(1), num);
-            x_space2 = linspace(-X_poly.b(n+2), X_poly.b(2), num);
-            x_space3 = linspace(-X_poly.b(n+3), X_poly.b(3), num);
+            x_space1 = linspace(-X_poly.b(syst.n+1), X_poly.b(1), num);
+            x_space2 = linspace(-X_poly.b(syst.n+2), X_poly.b(2), num);
+            x_space3 = linspace(-X_poly.b(syst.n+3), X_poly.b(3), num);
 
             %%%% For manual sanity checks
             % Lw_x = zeros(3,1); Lw_t = zeros(5,1);
             
             % setup the Lw computation
+            p1 = syst.scl(1)*syst.theta_true(1); p2 = syst.scl(2)*syst.theta_true(2);
             Lw = zeros(num,1);
             j1max = size(Theta.V,1);
             j2max = size(W.V,1);
             Theta_vert = Theta.V;
             W_vert = W.V;
-            x = SX.sym('x',3,1); t = SX.sym('t',5,1); 
-            G= SX.zeros(3,2);
-            G(1,1)=h*(-1e4*exp(-1/x(3))*x(1)^2);
-            G(2,1)=h* (   1e4*exp(-1/x(3))*x(1)^2  );
+            x = SX.sym('x',syst.n,1); t = SX.sym('t',syst.n+syst.q,1); 
+            G= SX.zeros(syst.n,syst.q);
+            G(1,1)=h*(-p1*exp(-1/x(3))*x(1)^2);
+            G(2,1)=h* (   p1*exp(-1/x(3))*x(1)^2  );
             G(3,1)=0;
-            G(1,2) = h*  ( -4*1e2*exp(-0.55/x(3))*x(1)  );
+            G(1,2) = h*  ( -p2*exp(-0.55/x(3))*x(1)  );
             G(2,2) = 0;
             G(3,2) = 0;
             fp= Function('fp', {x,t}, {P_sqrt*(  jacobian(G(:,1),x)*P_isqrt*t(1)+ jacobian(G(:,2),x)*P_isqrt*t(2)  )},...
@@ -273,10 +271,8 @@ classdef syst
         
         function [H_hat,p_val] = compute_maxH(x_val,u_val,theta, h, x_bounds, F, obj)
             import casadi.*
-            n = size(x_val,1);
-            m = size(u_val,1);
-            x = SX.sym('x',n,1);
-            u = SX.sym('u',m,1);
+            x = SX.sym('x',syst.n,1);
+            u = SX.sym('u',syst.m,1);
             par = SX.sym('par', size(theta,1),1);
             
             dyn = syst.dynamic(x,u,h,par);
@@ -287,11 +283,11 @@ classdef syst
 
             num = 5;
             xr_1min=0.03;
-            xr_1max=0.2;    % 0.4
+            xr_1max=0.2;    
             xr_2min=0.03;
-            xr_2max=0.2;    % 0.2
+            xr_2max=0.2;   
             xr_3min=0.03;
-            xr_3max=0.2;    % 0.2
+            xr_3max=0.2;    
             ur_min=0.049;
             ur_max=0.449;
 
@@ -300,6 +296,8 @@ classdef syst
             x_space3 = linspace(xr_3min, xr_3max, num);
             p_val = 0; m_val = 0;
             
+            theta_true = syst.theta_true;
+            theta_nom = syst.theta_nom;
             run parameter_def.m
 
             for i = 1:num
@@ -308,7 +306,7 @@ classdef syst
                     for k = 1:num
                         for iii = 1:3
                             % for jjj = 1:3
-                                theta_arr = (Theta_0.V(iii)'-theta_nom).*[1e4;4e2];
+                                theta_arr = (Theta_0.V(iii,:)'-theta_nom).*[syst.scl(1);syst.scl(2)];
                                 xi = [x_space1(i);x_space2(j);x_space3(k)];%-x_val;
                                 ui = 0;
                                 M1 = full(H1(xi,ui,Theta_0.V(iii)'));
@@ -317,15 +315,15 @@ classdef syst
                                 m1 = max(eig(M1));
                                 m2 = max(eig(M2));
                                 m3 = max(eig(M3));
-                                if max([m1,m2,m3])/2 >= m_val
-                                    m_val = max([m1,m2,m3])/2;
+                                if max([m1,m2,m3]) >= m_val %removed /2 here too
+                                    m_val = max([m1,m2,m3]); % removed /2 because part of the Hessian H1-H3 already
                                 end
 
                         
                                 [A,B] = syst.getXY(xi,ui,h, theta_arr);
                                 % disp(max(eig(A+B*F)))
                                 temp_M = inv(eye(3)-(A+B*F));
-                                pt = norm([0,-1,0]*temp_M);
+                                pt = norm([0,-1,0]*temp_M); %corresponds to the norm of eq. (21)
                                 if pt >= p_val
                                     p_val = pt;
                                 end %if
@@ -335,13 +333,13 @@ classdef syst
                 end %for j
             end %for i
         disp(m_val)
-        H_hat = m_val*eye(3);
+        H_hat = m_val*eye(syst.n);
         end
 
         function t = max_vert(Theta,W,nom)
             % vertices of Theta and W
             t1 = [Theta.V-nom';
-                    zeros(size(W.V,1)-size(Theta.V,1), size(Theta.V,2))];
+                    zeros(size(W.V,1)-size(Theta.V,1), syst.q)];
             t2 = W.V;
             t = [t1, t2]; t = max(t,[], 1);
         end %function max_vert

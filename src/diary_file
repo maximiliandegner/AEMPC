@@ -1,0 +1,938 @@
+Starting main.m at time 2024-12-12_06:04:52
+
+MOSEK Version 10.1.21 (Build date: 2023-12-1 11:28:43)
+Copyright (c) MOSEK ApS, Denmark WWW: mosek.com
+Platform: Windows/64-X86
+
+
+option =
+
+     1
+
+
+r_set = 
+
+[0.0832155, 0.0846493, 0.149097, 0.149097]
+0.753697
+Number of constraints added: 128
+Finished adding constraints.
+Starting optimization for rho= 0.97664
+Solved to optimality.
+Solution found.
+End of Option 1.
+
+theta_nom =
+
+    0.0995
+    1.0050
+
+    8.6876
+
+Number of constraints added 120
+Finished adding constraints.
+Starting optimization for different values of rho...
+Solved to optimality.
+End of terminal cost computation.
+Elapsed time is 1.250813 seconds.
+Tube results:
+
+P =
+
+   1.0e+03 *
+
+    0.0301    0.0081    0.0029
+    0.0081    0.0515    0.0550
+    0.0029    0.0550    1.5114
+
+
+K =
+
+   -0.0165   -0.1493   -3.9611
+
+
+w_bar =
+
+    0.0020
+
+
+rho =
+
+    0.9766
+
+
+Lw =
+
+    0.0074
+
+Terminal cost:
+
+H =
+
+    8.6876         0         0
+         0    8.6876         0
+         0         0    8.6876
+
+
+alpha =
+
+   1.0e+04 *
+
+    1.7345         0         0
+         0    1.7345         0
+         0         0    1.7345
+
+
+P_f =
+
+   1.0e+10 *
+
+    0.2805    0.0054   -0.2119
+    0.0054    0.3612    0.1820
+   -0.2119    0.1820    2.6720
+
+[Warning: Switched LMS <ON> due to AE-MPC mode.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('AE_MPC_journal', 'C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\AE_MPC_journal.m', 34)" style="font-weight:bold">AE_MPC_journal</a> (<a href="matlab: opentoline('C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\AE_MPC_journal.m',34,0)">line 34</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main', 'C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\main.m', 27)" style="font-weight:bold">main</a> (<a href="matlab: opentoline('C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\main.m',27,0)">line 27</a>)] 
+[Warning: Please ensure that MATLAB has access to the defined compiler, see solver options.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('AE_MPC_journal', 'C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\AE_MPC_journal.m', 40)" style="font-weight:bold">AE_MPC_journal</a> (<a href="matlab: opentoline('C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\AE_MPC_journal.m',40,0)">line 40</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main', 'C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\main.m', 27)" style="font-weight:bold">main</a> (<a href="matlab: opentoline('C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\main.m',27,0)">line 27</a>)] 
+Input arguments: N= 25, Tsim= 2500, beta= 100, mu= 15, h= 2.500000e-02
+
+K =
+
+   -0.0165   -0.1493   -3.9611
+
+
+P =
+
+   1.0e+03 *
+
+    0.0301    0.0081    0.0029
+    0.0081    0.0515    0.0550
+    0.0029    0.0550    1.5114
+
+
+rho =
+
+    0.9766
+
+
+s_bar =
+
+    0.1257
+
+[Warning: Running AE-MPC mode.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('AE_MPC_journal', 'C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\AE_MPC_journal.m', 129)" style="font-weight:bold">AE_MPC_journal</a> (<a href="matlab: opentoline('C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\AE_MPC_journal.m',129,0)">line 129</a>)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('main', 'C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\main.m', 27)" style="font-weight:bold">main</a> (<a href="matlab: opentoline('C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\main.m',27,0)">line 27</a>)] 
+CasADi - 2024-12-12 18:05:06 MESSAGE("calling "cl.exe /c jit_tmp46icrg.c /Fotmp_casadi_compiler_shelllt1lkg.obj"") [.../casadi/solvers/shell_compiler.cpp:229]
+CasADi - 2024-12-12 18:05:43 MESSAGE("calling "link.exe tmp_casadi_compiler_shelllt1lkg.obj /out:tmp_casadi_compiler_shelllt1lkg.dll /DLL"") [.../casadi/solvers/shell_compiler.cpp:248]
+
+Tsolve =
+
+   42.2853
+
+
+Tsolve =
+
+    0.3007
+
+
+Tsolve =
+
+    0.3357
+
+
+Tsolve =
+
+    0.3553
+
+
+Tsolve =
+
+    0.4726
+
+
+Tsolve =
+
+    0.3616
+
+
+Tsolve =
+
+    0.3669
+
+
+Tsolve =
+
+    0.3771
+
+
+Tsolve =
+
+    0.3581
+
+
+Tsolve =
+
+    0.4029
+
+
+Tsolve =
+
+    0.3650
+
+
+Tsolve =
+
+    0.3832
+
+
+Tsolve =
+
+    0.3772
+
+
+Tsolve =
+
+    0.4078
+
+
+Tsolve =
+
+    0.3903
+
+
+Tsolve =
+
+    0.3611
+
+
+Tsolve =
+
+    0.4196
+
+
+Tsolve =
+
+    0.6384
+
+
+Tsolve =
+
+    0.4124
+
+
+Tsolve =
+
+    0.5898
+
+
+Tsolve =
+
+    0.4543
+
+
+Tsolve =
+
+    0.5751
+
+
+Tsolve =
+
+    0.6064
+
+
+Tsolve =
+
+    0.5817
+
+
+Tsolve =
+
+    0.6748
+
+
+Tsolve =
+
+    0.7105
+
+
+Tsolve =
+
+    0.5907
+
+
+Tsolve =
+
+    1.2248
+
+
+Tsolve =
+
+    0.7095
+
+
+Tsolve =
+
+    0.7322
+
+
+Tsolve =
+
+    0.5565
+
+
+Tsolve =
+
+    0.7328
+
+
+Tsolve =
+
+    0.7400
+
+
+Tsolve =
+
+    0.9562
+
+
+Tsolve =
+
+    0.6578
+
+
+Tsolve =
+
+    0.7816
+
+
+Tsolve =
+
+    0.5320
+
+
+Tsolve =
+
+    0.8692
+
+
+Tsolve =
+
+    0.6582
+
+
+Tsolve =
+
+    1.0268
+
+
+Tsolve =
+
+    0.9262
+
+
+Tsolve =
+
+    0.6579
+
+
+Tsolve =
+
+    0.6653
+
+
+Tsolve =
+
+    0.8233
+
+
+Tsolve =
+
+    0.8845
+
+
+Tsolve =
+
+    0.6644
+
+
+Tsolve =
+
+    0.6080
+
+
+Tsolve =
+
+    0.9154
+
+
+Tsolve =
+
+    1.0608
+
+
+Tsolve =
+
+    0.9069
+
+
+Tsolve =
+
+    0.8244
+
+
+Tsolve =
+
+    0.5511
+
+
+Tsolve =
+
+    1.0885
+
+
+Tsolve =
+
+    0.9461
+
+
+Tsolve =
+
+    0.7691
+
+
+Tsolve =
+
+    0.9225
+
+
+Tsolve =
+
+    0.7543
+
+
+Tsolve =
+
+    0.8414
+
+
+Tsolve =
+
+    0.9872
+
+
+Tsolve =
+
+    0.6305
+
+
+Tsolve =
+
+    0.9411
+
+
+Tsolve =
+
+    0.6046
+
+
+Tsolve =
+
+    0.6811
+
+
+Tsolve =
+
+    0.9195
+
+
+Tsolve =
+
+    0.6984
+
+
+Tsolve =
+
+    0.8826
+
+
+Tsolve =
+
+    0.6492
+
+
+Tsolve =
+
+    0.7162
+
+
+Tsolve =
+
+    0.9378
+
+
+Tsolve =
+
+    1.0160
+
+
+Tsolve =
+
+    0.6680
+
+
+Tsolve =
+
+    0.8600
+
+
+Tsolve =
+
+    0.5695
+
+
+Tsolve =
+
+    1.0816
+
+
+Tsolve =
+
+    0.8485
+
+
+Tsolve =
+
+    0.8845
+
+
+Tsolve =
+
+    0.6458
+
+
+Tsolve =
+
+    0.9932
+
+
+Tsolve =
+
+    0.9564
+
+
+Tsolve =
+
+    0.6870
+
+
+Tsolve =
+
+    0.7811
+
+
+Tsolve =
+
+    0.8039
+
+
+Tsolve =
+
+    1.7427
+
+
+Tsolve =
+
+    0.8332
+
+
+Tsolve =
+
+    1.0384
+
+
+Tsolve =
+
+    0.9872
+
+
+Tsolve =
+
+    1.0457
+
+
+Tsolve =
+
+    0.7151
+
+
+Tsolve =
+
+    0.9754
+
+
+Tsolve =
+
+    0.7267
+
+
+Tsolve =
+
+    0.8082
+
+
+Tsolve =
+
+    0.7810
+
+
+Tsolve =
+
+    0.6432
+
+
+Tsolve =
+
+    1.0403
+
+
+Tsolve =
+
+    0.7504
+
+
+Tsolve =
+
+    0.6772
+
+
+Tsolve =
+
+    0.5788
+
+
+Tsolve =
+
+    0.6020
+
+
+Tsolve =
+
+    0.7340
+
+
+Tsolve =
+
+    0.9347
+
+
+Tsolve =
+
+    0.9471
+
+
+Tsolve =
+
+    0.8224
+
+
+Tsolve =
+
+    0.5615
+
+
+Tsolve =
+
+    0.8948
+
+
+Tsolve =
+
+    0.7696
+
+
+Tsolve =
+
+    0.9050
+
+
+Tsolve =
+
+    0.7520
+
+
+Tsolve =
+
+    0.9089
+
+
+Tsolve =
+
+    0.9509
+
+
+Tsolve =
+
+    0.6708
+
+
+Tsolve =
+
+    0.4711
+
+
+Tsolve =
+
+    0.9023
+
+
+Tsolve =
+
+    0.8198
+
+
+Tsolve =
+
+    0.8975
+
+
+Tsolve =
+
+    0.9437
+
+
+Tsolve =
+
+    0.9463
+
+
+Tsolve =
+
+    0.6259
+
+
+Tsolve =
+
+    0.9383
+
+
+Tsolve =
+
+    0.7959
+
+
+Tsolve =
+
+    0.9374
+
+
+Tsolve =
+
+    0.9254
+
+
+Tsolve =
+
+    0.8615
+
+
+Tsolve =
+
+    0.8595
+
+
+Tsolve =
+
+    0.9115
+
+
+Tsolve =
+
+    0.8726
+
+
+Tsolve =
+
+    0.6389
+
+
+Tsolve =
+
+    0.9141
+
+
+Tsolve =
+
+    0.5090
+
+
+Tsolve =
+
+    0.7062
+
+
+Tsolve =
+
+    0.8624
+
+
+Tsolve =
+
+    0.7955
+
+
+Tsolve =
+
+    0.7600
+
+
+Tsolve =
+
+    0.7328
+
+
+Tsolve =
+
+    0.8122
+
+
+Tsolve =
+
+    0.7508
+
+
+Tsolve =
+
+    0.7863
+
+
+Tsolve =
+
+    0.4767
+
+
+Tsolve =
+
+    0.6997
+
+
+Tsolve =
+
+    0.9186
+
+
+Tsolve =
+
+    0.7705
+
+
+Tsolve =
+
+    0.9074
+
+
+Tsolve =
+
+    0.6604
+
+
+Tsolve =
+
+    0.6569
+
+
+Tsolve =
+
+    0.6613
+
+
+Tsolve =
+
+    0.6177
+
+
+Tsolve =
+
+    0.7018
+
+
+Tsolve =
+
+    1.0060
+
+
+Tsolve =
+
+    1.0595
+
+
+Tsolve =
+
+    0.7894
+
+
+Tsolve =
+
+    1.0480
+
+
+Tsolve =
+
+    0.6646
+
+
+Tsolve =
+
+    0.7485
+
+
+Tsolve =
+
+    0.5402
+
+
+Tsolve =
+
+    0.7578
+
+
+Tsolve =
+
+    0.9211
+
+
+Tsolve =
+
+    1.0419
+
+
+Tsolve =
+
+    0.8515
+
+
+Tsolve =
+
+    0.6345
+
+
+Tsolve =
+
+    0.4405
+
+CasADi - 2024-12-12 18:07:52 WARNING("KeyboardInterruptException") [.../casadi/interfaces/ipopt/ipopt_nlp.cpp:196]
+Error while solving iteration 161
+  <a href="matlab:helpPopup MException" style="font-weight:bold">MException</a> with properties:
+
+    identifier: 'SWIG:RuntimeError'
+       message: 'Error in Opti::solve [OptiNode] at .../casadi/core/optistack.cpp:165:↵.../casadi/core/optistack_internal.cpp:1016: Assertion "return_success(accept_limit)" failed:↵Solver failed. You may use opti.debug.value to investigate the latest values of variables. return_status is 'NonIpopt_Exception_Thrown''
+         cause: {}
+         stack: [3×1 struct]
+    Correction: []
+
+<a href="matlab: opentoline('C:\Users\maxim\Documents\Masterthesis\journal_publication\AEMPC\src\AE_MPC_journal.m',285,1)">285 </a>        constraints = Function('constraints', {z,x,v,u,s,w, p, theta_LMS, xr, zr, ur, x_k}, {opti.debug.g});
+if system_dependent('IsDebugMode')==1, dbquit; end
+main
+diary_file = string(datetime, "yyyy-MM-dd_hh-mm-ss");
+diary(diary_file);

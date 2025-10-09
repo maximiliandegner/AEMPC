@@ -10,6 +10,7 @@ mfilePath = mfilename('fullpath');
 if ~isempty(mfilePath)
         mfilePath = mfilePath(1:find(mfilePath == '\', 2, 'last')-1);
 end
+addpath("\..\");
     % n_steps=10;%specify how many grid point for each dimension
     switch nargin
         case 0
@@ -19,15 +20,24 @@ end
             LW_range = linspace(0.001, 0.03, 10);
             w_max = 0.002; %005
             save_to_file = "";
+            theta_true = syst.theta_true;
+            theta_nom = syst.theta_nom;
+            run([mfilePath, '\parameter_def.m'])
             run constraint_def.m
             run([mfilePath, '\opt_steady_offline.m']); load([mfilePath, '\opt_steady.mat'], "r_set"); equilib = full(r_set);
         case 5
             save_to_file = "";
             RHO = linspace(0.98, 0.9999, 6);
+            theta_true = syst.theta_true;
+            theta_nom = syst.theta_nom;
+            run([mfilePath, '\parameter_def.m'])
             run constraint_def.m
             run([mfilePath, '\opt_steady_offline.m']); load([mfilePath, '\opt_steady.mat'], "r_set"); equilib = full(r_set);
         case 6
             disp("Saving to path\n"+save_to_file)
+            theta_true = syst.theta_true;
+            theta_nom = syst.theta_nom;
+            run([mfilePath, '\parameter_def.m'])
             run constraint_def.m
             run([mfilePath, '\opt_steady_offline.m']); load([mfilePath, '\opt_steady.mat'], "r_set"); equilib = full(r_set);
         case 8    
@@ -39,7 +49,7 @@ end
     end
     
     import casadi.*    
-    a_1 = 10^5; a_2 = 4e2;      % scaling factors for parameter in model
+    a_1 = syst.scl(1); a_2 = syst.scl(2);      % scaling factors for parameter in model
     run([mfilePath, '\parameter_def.m'])
     nonconst = 0;
 

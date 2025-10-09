@@ -3,8 +3,8 @@ function [ell_out,obj] = opt_steady_online(n,m, theta, u_s, x_s, silent, obj)
 import casadi.*
 %constants
 load("Offline\grid_disc.mat", "h")
-alpha=2;delta=0.55;
-a_1 = 10^5*theta(1); a_2 = 4*10^2*theta(2);
+alpha=syst.alpha;delta=syst.delta;
+a_1 = syst.scl(1)*theta(1); a_2 = syst.scl(2)*theta(2);
 
 x_r1min=0.03;
 x_r1max=0.8;
@@ -58,26 +58,17 @@ res = solver('x0' , [x_s;u_s],... % solution guess
              'ubx', ub,...           % upper bound on x
              'lbg',    -1e-5*ones(3,1),...           % lower bound on g
              'ubg',    1e-5*ones(3,1));             % upper bound on g
-%0);...%
  
 %%
-% r_set=res.x;
 ell_out = full(-res.x(2));
 obj.lambda = ell_out;
 
 if ~contains(solver.stats().return_status, 'Solve_Succeeded')
-    % if contains(solver.stats().return_status, 'Unset')
-    %     load('opt_steady.mat', 'r_set')
-    %     ell_out = full(-r_set(2));
-    % end
     warning([solver.stats().return_status '     -- -- --     opt_steady_online.m']);
 end
 
 
 %% 
-% save('opt_steady','r_set', 'l_set')
-% toc(t)
-
 function f=fun(x,u, a_1, a_2, alpha, delta)
 % alpha=2;delta=0.55;% a_2=400;a_1=3*10^6;
 

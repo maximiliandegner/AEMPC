@@ -1,14 +1,19 @@
 %%% this file creates the offline SDP for computing P and K, and solves it    
 
+%% load computed feedback
+load("grid_disc.mat", "K");
+
 %% definition of the decision variables
-Y_0 = sdpvar(m,n);
+% Y_0 = sdpvar(m,n);
 X_0 = sdpvar(n);
 if nonconst % if nonconstant matrices are desired
-    Y_1=sdpvar(m,n); Y_2=sdpvar(m,n); Y_3=sdpvar(m,n); Y_4=sdpvar(m,n); Y_5=sdpvar(m,n);Y_6=sdpvar(m,n);
+    % Y_1=sdpvar(m,n); Y_2=sdpvar(m,n); Y_3=sdpvar(m,n); Y_4=sdpvar(m,n); Y_5=sdpvar(m,n);Y_6=sdpvar(m,n);
     X_1 = sdpvar(n);X_2 = sdpvar(n);X_3 = sdpvar(n);X_4 = sdpvar(n);X_5 = sdpvar(n);X_6 = sdpvar(n);
 end
 X_max=sdpvar(n);
-c_j = sdpvar(length(h_xu),1);
+
+% M is defined in compute_terminal_cost.m
+M_ = sqrtm(M);
 
 % constraints 
 con=[];
@@ -37,12 +42,12 @@ theta_ = (theta - theta_nom') .*[a_1, a_2];      % compute distance from nominal
         [A,B]  = syst.getA_d(x,u,h, theta);%compute Jacobian
     
          %calculate Y and X for every point depending on the parameters at that point
-         Y = Y_0;
+         % Y = Y_0;
          X = X_0;
          if nonconst
             t1=A(1,1);t2=A(1,3);t3=A(2,1);t4=A(2,3);t5=B(1);t6=B(2);%syst.get nonlinear entries from (A,B) to parametrize P,K
-            Y = Y+Y_1*t1+Y_2*t2+Y_3*t3+Y_4*t4+Y_5*t5+Y_6*t6;
-            X = X++X_1*t1+X_2*t2+X_3*t3+X_4*t4+X_5*t5+X_6*t6;
+            % Y = Y+Y_1*t1+Y_2*t2+Y_3*t3+Y_4*t4+Y_5*t5+Y_6*t6;
+            X = X+X_1*t1+X_2*t2+X_3*t3+X_4*t4+X_5*t5+X_6*t6;
             con=[con;X_max<=X];
          end
 
@@ -59,15 +64,11 @@ theta_ = (theta - theta_nom') .*[a_1, a_2];      % compute distance from nominal
                     Xp = Xp+X_1*tp1+X_2*tp2+X_3*tp3+X_4*tp4+X_5*tp5+X_6*tp6;
                  end
 
-                 ineq1=[rho^2*X,     (A*X+B*Y)';
-                        A*X+B*Y,        Xp];
-         
-                 G_th = full(G_1x(x))*theta_(1) + full(G_2x(x))*theta_(2);
-                 ineq11 = [Lw^2*X,        G_th*X;
-                          (G_th*X)',     X];
+                 ineq1=[X,     (A*X+B*K*X)',    M_*X;
+                        A*X+B*K*X,        Xp,   zeros(n);
+                        X*M_,      zeros(n),       eye(n)];
         
                  con=[con;ineq1>=0];
-                 con=[con;ineq11>=0];
              end %if xplusplus(1)
 
          end %for uplus
@@ -78,41 +79,15 @@ theta_ = (theta - theta_nom') .*[a_1, a_2];      % compute distance from nominal
  end %for x2
  end %for x1
 
-% require the uncertainty bound only at the desired steady-state from 'equilib' 
-for vertW = 1:size(W.V, 1)
-     G_fval = full(G_f(equilib(1:n)));
-     % the h* is already included in G_fval, but not in the vertices W.V
-     ineq2 = [X,    G_fval*theta_'+h*W.V(vertW,:)'; 
-              (G_fval*theta_'+h*W.V(vertW,:)')' , w_max^2]; 
-     con = [con;ineq2>=0];
-end %for vertW
-
 end %for vertT
 
-% require the constraint tightening only at the desired equilibrium 'equilib'
-for jj = 1:numel(h_xu)
-con = [con; c_j(jj)/(-g_val(jj))*( w_max/(1-rho-Lw) ) <= 1];
-
-ineq3 = [c_j(jj)           ,  H_xu(jj,:)*[X;Y];
-         (H_xu(jj,:)*[X;Y])' ,  X];
-con = [con; ineq3 >= 0; c_j(jj) >= 0];
-end %for jj
-disp("Number of constraints added: " + num2str(ii+jj))
-
-% adding PSD of P 
-con=[con;   X<= eye(n)];
-
+disp("Number of constraints added " + num2str(ii));
 disp('Finished adding constraints.')
 
 %% running optimization, looping over RHO
-disp(['Starting optimization for rho= ' num2str(rho)]);
-options = sdpsettings('solver','mosek', 'verbose', 0);
-cost = 0;
-
- weight = ones(8,1);%10*ones(length(c_j),1); weight(7:8) = [1;1];
- for jj=1:numel(c_j)
-     cost = cost + weight(jj)*c_j(jj)^2*w_max^2/(1-rho-Lw)^2 * 1/(-g_val(jj))^2; 
- end
+disp('Starting optimization for different values of rho...');
+options = sdpsettings('solver','mosek', 'verbose',0);
+cost = -log(det(X));
 
 % % for debugging unbounded issues with YALMIP
 % con = [con; -10^8 <= allvariables(cost) <=10^8];    
@@ -124,8 +99,10 @@ switch ret.problem
     case 0
         disp("Solved to optimality.")
         solved = true;
+        P_f = inv(double(X));
     otherwise
         warning(ret.info)
         solved = false;
+        P_f = NaN;
 end
 

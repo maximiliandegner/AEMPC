@@ -15,13 +15,15 @@ grey_alpha = 0.5;
 lw2 = 2; lw4 = 3;
 ls2 = ':'; ls4 = '--';
 TV = false;
+theta_true = syst.theta_true;
+theta_nom = syst.theta_nom;
 run parameter_def.m
 
 sw_time = [1500; 2500];      % Time of switching to theta_true time-varying
 rampval = [0.00000025;-0.000004];
 ramp_end = [rampval(1)*(sw_time(2)-sw_time(1)); rampval(2)*(sw_time(2)-sw_time(1))];
 
-saving_fig = false;
+saving_fig = true;
 include_title = false;
 %%
 
@@ -30,18 +32,21 @@ include_title = false;
 %% figure(1):
 % load TI parameter files, comparing AE- with two E-MPC schemes
 % only plotting the state-behavior
-%load("Results/055/LMI_designed/TV/AE_TV2--N_25-Tsim_1000-mu_150-h_0.025-LMS_1-TV_1noiseF_1.mat", "x_arr", "theta_arr", "Tsim")
-load("Results/Simulations/AE_scaled--N_25-Tsim_2500-mu_15-h_0.025-LMS_1-TV_0noiseF_1.mat", "x_arr", "theta_arr", "Tsim")
+%load("Results/055/LMI_designed/TV/AE_TV2--N_25-Tsim_1000-mu_150-h_0.025-LMS_1-TV_1.mat", "x_arr", "theta_arr", "Tsim")
+load("Results/Simulations/AE_scaled--N_25-Tsim_2500-mu_15-h_0.025-LMS_1-TV_0.mat", "x_arr", "theta_arr", "Tsim", "beta")
+%%%load("Results/Simulations/current_version/AE_scaled--N_25-Tsim_50-mu_15-h_0.025-LMS_1-TV_0.mat", "x_arr", "theta_arr", "Tsim")
 x_arr_AE = x_arr;
 theta_arr_AE = theta_arr;
 
-% load("Results/055/LMI_designed/TV/E_wrongTV--N_25-Tsim_1000-mu_150-h_0.025-LMS_0-TV_1noiseF_1.mat", "x_arr", "theta_arr")
-load("Results/Simulations/E_wrong--N_25-Tsim_2500-mu_15-h_0.025-LMS_0-TV_0noiseF_1.mat", "x_arr", "theta_arr")
+% load("Results/055/LMI_designed/TV/E_wrongTV--N_25-Tsim_1000-mu_150-h_0.025-LMS_0-TV_1.mat", "x_arr", "theta_arr")
+load("Results/Simulations/E_wrong--N_25-Tsim_2500-mu_15-h_0.025-LMS_0-TV_0.mat", "x_arr", "theta_arr")
+%%%load("Results/Simulations/current_version/E_wrong--N_25-Tsim_50-mu_15-h_0.025-LMS_0-TV_0.mat", "x_arr", "theta_arr")
 x_arr_Earts = x_arr;
 theta_arr_Earts = theta_arr;
 
-% load("Results/055/LMI_designed/TV/E_trueTV2--N_25-Tsim_4000-mu_150-h_0.025-LMS_0-TV_1noiseF_1.mat", "x_arr", "theta_arr")
-load("Results/Simulations/E_true--N_25-Tsim_2500-mu_15-h_0.025-LMS_0-TV_0noiseF_1.mat", "x_arr", "theta_arr")
+% load("Results/055/LMI_designed/TV/E_trueTV2--N_25-Tsim_4000-mu_150-h_0.025-LMS_0-TV_1.mat", "x_arr", "theta_arr")
+load("Results/Simulations/E_true--N_25-Tsim_2500-mu_15-h_0.025-LMS_0-TV_0.mat", "x_arr", "theta_arr")
+%%%load("Results/Simulations/current_version/E_true--N_25-Tsim_50-mu_15-h_0.025-LMS_0-TV_0.mat", "x_arr", "theta_arr")
 x_arr_AEperf = x_arr;
 theta_arr_AEperf = theta_arr;
 
@@ -49,7 +54,7 @@ theta_arr_AEperf = theta_arr;
 lstrue = "-.";
 % fs = fs+1;
 
-p = 0.087; % percentage of last and first time span relative to Tsim
+percent = 0.087; % percentage of last and first time span relative to Tsim
 % OLD coloring (brigther colors, all lines "-" style): 
 % col1 = [0, 0, 1, 0.5]; col4 = [1, 0, 0, 0.5]; col2 = [0.5, 1, 0, 0.5];
 % lw2 = lw; lw4 = lw; ls2 = "-"; ls4 = "-";
@@ -151,9 +156,9 @@ set(gca, 'YAxisLocation', 'right');
 set(gca, "TickLabelInterpreter", "latex");
 
 linkaxes([ax1 ax3 ax5], 'x')
-xlim(ax1, [0, p*Tsim*1.05])
+xlim(ax1, [0, percent*Tsim*1.05])
 linkaxes([ax2 ax4 ax6], 'x')
-xlim(ax2, [(1-p)*Tsim*0.997, Tsim*1.003])
+xlim(ax2, [(1-percent)*Tsim*0.997, Tsim*1.003])
 
 if include_title
     title(t, "Closed-Loop State Evolution", 'FontSize', fs+3, 'Interpreter', 'latex');
@@ -186,7 +191,7 @@ ylim([0.078, 0.092])
 grid on;
 set(gca,'fontsize',fs-2);
 set(gca, "TickLabelInterpreter", "latex");
-xlim(ax1, [0, 3*p*Tsim*1.05])
+xlim(ax1, [0, 3*percent*Tsim*1.05])
 xlabel("Time", "Interpreter", "latex", 'FontSize', fs);
 
 ax2 = nexttile; % top right
@@ -203,7 +208,7 @@ set(gca,'fontsize',fs-2);
 %ylabel("$$[x]_3$$", "Interpreter", "latex", 'FontSize', fs);
 set(gca,'YTickLabel',[]);
 set(gca, "TickLabelInterpreter", "latex");
-xlim(ax2, [(1-p)*Tsim*0.997, Tsim*1.003])
+xlim(ax2, [(1-percent)*Tsim*0.997, Tsim*1.003])
 leg = legend('AE-MPC', 'E-MPC with $$\theta^\ast$$', 'E-MPC with $$\hat{\theta}$$', 'FontSize', fs, 'Orientation', 'horizontal', 'Interpreter', 'latex');
 leg.Layout.Tile = 'north';
 
@@ -370,17 +375,17 @@ TV = true;
 run parameter_def.m
 
 %%% load the correct data
-load("Results/Simulations/AE_scaled--N_25-Tsim_3000-mu_25-h_0.025-LMS_1-TV_1noiseF_1.mat", "x_arr", "theta_arr", "Tsim")
+load("Results/Simulations/AE_scaled--N_25-Tsim_3000-mu_15-h_0.025-LMS_1-TV_1.mat", "x_arr", "theta_arr", "Tsim")
 x_arr_AE = x_arr;
 theta_arr_AE_TVp = theta_arr;
 
-% load("Results/055/LMI_designed/TV/E_wrongTV--N_25-Tsim_1000-mu_150-h_0.025-LMS_0-TV_1noiseF_1.mat", "x_arr", "theta_arr")
-load("Results/Simulations/E_true--N_25-Tsim_3000-mu_25-h_0.025-LMS_0-TV_1noiseF_1.mat", "x_arr", "theta_arr")
+% load("Results/055/LMI_designed/TV/E_wrongTV--N_25-Tsim_1000-mu_150-h_0.025-LMS_0-TV_1.mat", "x_arr", "theta_arr")
+load("Results/Simulations/E_true--N_25-Tsim_3000-mu_15-h_0.025-LMS_0-TV_1.mat", "x_arr", "theta_arr")
 x_arr_AEperf = x_arr;
 theta_arr_AEperf = theta_arr;
 
-% load("Results/055/LMI_designed/TV/E_trueTV2--N_25-Tsim_4000-mu_150-h_0.025-LMS_0-TV_1noiseF_1.mat", "x_arr", "theta_arr")
-load("Results/Simulations/E_wrong--N_25-Tsim_3000-mu_25-h_0.025-LMS_0-TV_1noiseF_1.mat", "x_arr", "theta_arr")
+% load("Results/055/LMI_designed/TV/E_trueTV2--N_25-Tsim_4000-mu_150-h_0.025-LMS_0-TV_1.mat", "x_arr", "theta_arr")
+load("Results/Simulations/E_wrong--N_25-Tsim_3000-mu_15-h_0.025-LMS_0-TV_1.mat", "x_arr", "theta_arr")
 x_arr_Earts = x_arr;
 theta_arr_Earts = theta_arr;
 
@@ -487,6 +492,58 @@ if include_title
     title(t, "Performance Comparison for Time-Varying Parameters", 'FontSize', fs+2, 'Interpreter', 'latex');
 end
 
+%% figure(63): State x2 at beginning and end of the simulation
+f = figure(13); t = tiledlayout(1,2, "TileSpacing","compact", "Padding","tight"); 
+f.Position = [500 120 800 450];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ax1 = nexttile; %top left
+plot(x_arr_AE(2,1:Tsim), 'Color', col1, "LineWidth", lw2); hold on;
+%plot(x_arr_AEperf(2,1:end), 'Color', col2, "LineWidth", lw2, "LineStyle", ls2);
+plot(x_arr_Earts(2,1:Tsim), 'Color', col4, "LineWidth", lw4, "LineStyle", ls4);
+plot([200; 200], [0.03; 0.13], "LineWidth", lw, "LineStyle","--", 'Color',[0,0,0,grey_alpha]);
+ylabel("$$[x]_2$$", "Interpreter", "latex", 'FontSize', fs);
+yticks([0.078, 0.082, 0.086, 0.090])
+ylim([0.078, 0.092])
+grid on;
+set(gca,'fontsize',fs-2);
+set(gca, "TickLabelInterpreter", "latex");
+xlim(ax1, [0, 3*percent*Tsim*1.05])
+xlabel("Time", "Interpreter", "latex", 'FontSize', fs);
+
+ax2 = nexttile; % top right
+plot(x_arr_AE(2,1:Tsim), 'Color', col1, "LineWidth", lw); hold on;
+plot(x_arr_AEperf(2,1:end), 'Color', col2, "LineWidth", lw2, "LineStyle", ls2);
+plot(x_arr_Earts(2,1:Tsim), 'Color', col4, "LineWidth", lw4, "LineStyle", ls4);
+plot([200; 200], [0.03; 0.13], "LineWidth", lw, "LineStyle","--", 'Color',[0,0,0,grey_alpha]);
+xlabel("Time", "Interpreter", "latex", 'FontSize', fs);
+%ylabel("$$[x]_2$$", "Interpreter", "latex", 'FontSize', fs);
+yticks([0.078, 0.082, 0.086, 0.090])
+ylim([0.078, 0.092])
+grid on;
+set(gca,'fontsize',fs-2);
+%ylabel("$$[x]_3$$", "Interpreter", "latex", 'FontSize', fs);
+set(gca,'YTickLabel',[]);
+set(gca, "TickLabelInterpreter", "latex");
+xlim(ax2, [(1-percent)*Tsim*0.997, Tsim*1.003])
+leg = legend('AE-MPC', 'E-MPC with $$\theta^\ast$$', 'E-MPC with $$\hat{\theta}$$', 'FontSize', fs, 'Orientation', 'horizontal', 'Interpreter', 'latex');
+leg.Layout.Tile = 'north';
+
+linkaxes([ax1 ax2], 'y')
+if include_title
+    title(t, "Closed-Loop State Evolution", 'FontSize', fs+3, 'Interpreter', 'latex');
+end
+if saving_fig
+    N = input('Horizon length:\n')
+    beta = input('Value of beta:\n')
+    LMS = 1;
+    mu = input('Value of mu:\n')
+    comment = input('Additional comments (may be empty):', 's')
+    exportgraphics(gcf, ['Results/Figures/States_TI-param' num2str(N) '_' num2str(Tsim) '_beta_' num2str(beta) '_LMS_' num2str(LMS) '_mu_' num2str(mu) '_comment-' comment '.pdf'])
+    exportgraphics(gcf, ['Results/Figures/States_TI-param' num2str(N) '_' num2str(Tsim) '_beta_' num2str(beta) '_LMS_' num2str(LMS) '_mu_' num2str(mu) '_comment-' comment '.eps'])
+end
+
+
 
 if saving_fig
     disp("Please input data for naming the figure as follows:")
@@ -495,6 +552,7 @@ if saving_fig
     LMS = 1;
     mu = input('Value of mu:\n')
     comment = input('Additional comments (may be empty):', 's')
+    figure(6);
     exportgraphics(gcf, ['Results/Figures/Perf_TVparam--' num2str(N) '_' num2str(Tsim) '_beta_' num2str(beta) '_LMS_' num2str(LMS) '_mu_' num2str(mu) '_comment-' comment '.pdf'])
     % exportgraphics(gcf, ['Results/Figures/Perf_TIparam--' num2str(N) '_' num2str(Tsim) '_beta_' num2str(beta) '_LMS_' num2str(LMS) '_mu_' num2str(mu) '_comment-' comment '.eps'])
 end
