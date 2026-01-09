@@ -3,7 +3,7 @@
 ## Description
 
 This repository contains the MATLAB code that accompanies the paper 
-> Maximilian Degner, Raffaele Soloperto, Melanie N. Zeilinger, John Lygeros, Johannes Köhler, "Adaptive Economic Model Predictive Control: Performance Guarantees for Nonlinear Systems", 2024, arXiv: 2412.XXXXXX.
+> Maximilian Degner, Raffaele Soloperto, Melanie N. Zeilinger, John Lygeros, Johannes Köhler, "Adaptive Economic Model Predictive Control: Performance Guarantees for Nonlinear Systems", 2024, arXiv: 2412.13046.
 
 
 ## Prerequisites
