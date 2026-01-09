@@ -22,7 +22,7 @@ run offline_pipeline.m
 % command prompt of the "x64 Native Tools Command Propmt for VS" (usually by typing "matlab" + ENTER ). 
 % For Linux/Mac users: Be sure to have "gcc" installed. For more details see casadi.org and 
 % https://github.com/casadi/casadi/wiki/FAQ:-how-to-perform-jit-for-function-evaluations-of-my-optimization-problem%3F
-JIT = true;
+JIT = false;
 
 %%%%%%
 % time-invariant parameters
