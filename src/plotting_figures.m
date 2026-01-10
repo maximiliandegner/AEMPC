@@ -7,7 +7,7 @@
 % - Figure(2): Comparison of performance of MPC schemes, *time-invariant* case
 % - Figure(6): Comparison of performance of MPC schemes, *timevarying* case
 
-lw = 1.5; fs = 15; 
+lw = 1.5; fs = 20; 
 lscon   = '--';         lstrue  = '-';
 colcon  = 'k';          coltrue = [1, 0, 0, 0.6];
 col1 = [0, 0, 1,0.5]; col4 = [0.85, 0, 0, 1]; col2 = [0.23,0.57,0.13];
@@ -232,7 +232,7 @@ end
 % estimate's evolution
 % close 2
 f = figure(2);
-lw = 1.75; fs = 16;
+lw = 1.75; %fs = 16;
 f.Position = [0 0 900 900];
 
 plot_type = "averaged_upT"; interv = 10;
@@ -390,7 +390,7 @@ x_arr_Earts = x_arr;
 theta_arr_Earts = theta_arr;
 
 % preliminary things
-grey_alpha = 0.5; lw = 1.75; fs = 16;
+grey_alpha = 0.5; lw = 1.75; %fs = 16;
 run_time = min([length(x_arr_AE(2,:)), length(x_arr_AEperf(2,:))]);%, length(x_arr_Earts(2,:))]);
 % rampval = [0.0000004;-0.000007];
 rampval = [0.00000025;-0.000004]; 
