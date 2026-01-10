@@ -3,7 +3,7 @@
 ## Description
 
 This repository contains the MATLAB code that accompanies the paper 
-> Maximilian Degner, Raffaele Soloperto, Melanie N. Zeilinger, John Lygeros, Johannes Köhler, "Adaptive Economic Model Predictive Control: Performance Guarantees for Nonlinear Systems", 2024, arXiv: 2412.13046.
+> M. Degner, R. Soloperto, M. N. Zeilinger, J. Lygeros, J. Köhler, "Adaptive Economic Model Predictive Control: Performance Guarantees for Nonlinear Systems", *IEEE Transactions on Automatic Control*, 2025, in print. [Online]. Available: [doi.org/arXiv:2412.13046](https://doi.org/10.48550/arXiv.2412.13046)
 
 
 ## Prerequisites
@@ -36,7 +36,10 @@ If you use this code in your research, please cite our work:
 @article{degner2024AEMPC,
   title={Adaptive Economic Model Predictive Control: Performance Guarantees for Nonlinear Systems},
   author={Degner, Maximilian and Soloperto, Raffaele and Zeilinger, Melanie N., Lygeros, John and Köhler, Johannes},
-  year={2024}
+  journal={IEEE Transactions on Automatic Control},
+  year={2025},
+  url={https://doi.org/10.48550/arXiv.2412.13046},
+  extra={In print.}
 }
 ```
   
